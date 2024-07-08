@@ -1,0 +1,83 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Buyer {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  name         String?
+  profilePhoto Json?
+  messages     Message[]
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+model Breeder {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  name         String?
+  profilePhoto Json?
+  messages     Message[]
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+model Message {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  content   String?
+  sentAt    DateTime?
+  ad        Ad?       @relation(fields: [adId], references: [id])
+  adId      String?
+  breeder   Breeder?  @relation(fields: [breederId], references: [id])
+  breederId String?
+  buyer     Buyer?    @relation(fields: [buyerId], references: [id])
+  buyerId   String?
+}
+
+model Ad {
+  id                   String           @id @default(cuid())
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  name                 String?
+  breed                String?
+  typeField            EnumAdTypeField?
+  color                String?
+  weight               Float?
+  tests                String?
+  photos               Json?
+  publicationStartDate DateTime?
+  publicationEndDate   DateTime?
+  status               EnumAdStatus?
+  messages             Message[]
+}
+
+model User {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  firstName String?
+  lastName  String?
+  username  String    @unique
+  email     String?   @unique
+  password  String
+  roles     Json
+  breeders  Breeder[]
+  buyers    Buyer[]
+}
+
+enum EnumAdTypeField {
+  Option1
+}
+
+enum EnumAdStatus {
+  Option1
+}
